@@ -3,6 +3,7 @@
   justify-content: center;
   width: 100%;
   margin-top: 64px;
+  min-width: 500px;
 }
 
 .dataContainer {
@@ -31,4 +32,30 @@
   border: 0;
   border-radius: 5px;
   
+}
+
+.mt-50 {
+  margin-top: 50px
+}
+
+.shadow {
+  box-shadow: 0 0 10px rgba(0 0 0 / 30%);
+}
+
+
+.headerMessage {
+  padding: 5px;
+  font-size: 10px;
+  border-bottom: 1px solid #dedede;
+}
+
+.message {
+  padding: 10px;
+}
+
+.footerMessage {
+  padding: 5px;
+  font-size: 10px;
+  border-top: 1px solid #dedede;
+  background-color: #ededed;
 }

@@ -83,7 +83,7 @@ const App = () => {
         /*
         * Execute the actual wave from your smart contract
         */
-        const waveTxn = await wavePortalContract.wave(message);
+        const waveTxn = await wavePortalContract.wave(message, { gasLimit: 300000 });
         console.log("Mining...", waveTxn.hash);
 
         await waveTxn.wait();
@@ -102,27 +102,17 @@ const App = () => {
     }
   }
 
-  /*
-   * Create a method that gets all waves from your contract
-   */
   const getAllWaves = async () => {
+    const { ethereum } = window;
+
     try {
-      const { ethereum } = window;
-      if (ethereum) {
+      if (window.ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
 
-        /*
-         * Call the getAllWaves method from your Smart Contract
-         */
         const waves = await wavePortalContract.getAllWaves();
-        
 
-        /*
-         * We only need address, timestamp, and message in our UI so let's
-         * pick those out
-         */
         let wavesCleaned = [];
         waves.forEach(wave => {
           wavesCleaned.push({
@@ -132,10 +122,20 @@ const App = () => {
           });
         });
 
-        /*
-         * Store our data in React State
-         */
         setAllWaves(wavesCleaned);
+
+        /**
+         * Listen in for emitter events!
+         */
+        wavePortalContract.on("NewWave", (from, timestamp, message) => {
+          console.log("NewWave", from, timestamp, message);
+
+          setAllWaves(prevState => [...prevState, {
+            address: from,
+            timestamp: new Date(timestamp * 1000),
+            message: message
+          }]);
+        });
       } else {
         console.log("Ethereum object doesn't exist!")
       }
@@ -160,13 +160,24 @@ const App = () => {
         </div>
 
         <div className="bio">
-          I am farza and I worked on self-driving cars so that's pretty cool right? Connect your Ethereum wallet and wave at me!
+          If you want to win ETH wave me!
         </div>
 
-        <input type="text" value={message} onChange={handleMessage} />
+        <input 
+          type="text" 
+          value={message} 
+          onChange={handleMessage} 
+          className={'shadow mt-50'}
+          style={{ 
+            padding: "4px", 
+            border: "none", 
+            width: "600px",
+            height: "50px"
+          }}
+        />
 
         <button className="waveButton" onClick={wave}>
-          Wave at Me
+          Wave!
         </button>
 
         {!currentAccount && (
@@ -177,11 +188,23 @@ const App = () => {
 
         {allWaves.map((wave, index) => {
           return (
-            <div key={index} style={{ backgroundColor: "OldLace", marginTop: "16px", padding: "8px" }}>
-              <div>Address: {wave.address}</div>
-              <div>Time: {wave.timestamp.toString()}</div>
-              <div>Message: {wave.message}</div>
-            </div>)
+            <div
+              className={"shadow"} 
+              key={index} 
+              style={{ marginTop: "16px", padding: "8px" }}
+            >
+              <div className="headerMessage">Address: {wave.address}</div>
+              
+              <div className={"message "}>
+                Message: { wave.message }
+              </div>
+
+              <div className="footerMessage">
+                Time: {wave.timestamp.toString() }
+              </div>
+
+            </div>
+          )
         })}
       </div>
     </div>
