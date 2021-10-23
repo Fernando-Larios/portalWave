@@ -14,7 +14,7 @@ const App = () => {
   /**
    * Contract address!
    */
-  const contractAddress = "0xF6Dd728A664B303D22f6C944C0B739Fad1bd73Fe";
+  const contractAddress = "0x0c2Ab51F8D29E185cA4DC2200084D1EE467A38BF";
   /**
    * Reference abi content!
    */
